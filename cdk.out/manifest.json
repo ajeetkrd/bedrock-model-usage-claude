@@ -1,0 +1,233 @@
+{
+  "version": "36.3.0",
+  "artifacts": {
+    "BedrockModelUsageTrackerStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "BedrockModelUsageTrackerStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "BedrockModelUsageTrackerStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://708895069383/ap-south-1",
+      "properties": {
+        "templateFile": "BedrockModelUsageTrackerStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::708895069383:role/cdk-hnb659fds-deploy-role-708895069383-ap-south-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::708895069383:role/cdk-hnb659fds-cfn-exec-role-708895069383-ap-south-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-708895069383-ap-south-1/377e92d5b63232c09bbd8b2ba7ffd17a380c77f2720a4c6c3cc67ddbb3ed7fe0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "BedrockModelUsageTrackerStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::708895069383:role/cdk-hnb659fds-lookup-role-708895069383-ap-south-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "BedrockModelUsageTrackerStack.assets"
+      ],
+      "metadata": {
+        "/BedrockModelUsageTrackerStack/UsageTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageTable28300137"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/BatchStateTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchStateTable6A5DF0DB"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageAlertTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageAlertTopicDE457A2F"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageAlertTopic/ajeetkrd@amazon.com/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageAlertTopicajeetkrdamazoncom98F11CD3"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageBatchProcessorFn/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageBatchProcessorFnServiceRole0F1E820F"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageBatchProcessorFn/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageBatchProcessorFnServiceRoleDefaultPolicy34C99CAE"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageBatchProcessorFn/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageBatchProcessorFnD841E187"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageBatchProcessorFn/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageBatchProcessorFnLogRetentionE6FE383A"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageBatchSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageBatchScheduleEBFF20B9"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageBatchSchedule/AllowEventRuleBedrockModelUsageTrackerStackUsageBatchProcessorFnC2060174": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageBatchScheduleAllowEventRuleBedrockModelUsageTrackerStackUsageBatchProcessorFnC2060174F0D3F3CF"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageReaderFn/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageReaderFnServiceRoleD3185938"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageReaderFn/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageReaderFnServiceRoleDefaultPolicyF50137A8"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageReaderFn/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageReaderFn62B89485"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageReaderFn/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageReaderFnLogRetention84438CF7"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/BedrockUsageDashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BedrockUsageDashboard18F4C624"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/DashboardName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DashboardName"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/UsageTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UsageTableName"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/StateTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateTableName"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/AlertTopicArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlertTopicArn"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/BatchProcessorLambdaName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BatchProcessorLambdaName"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/LogBucketName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogBucketName"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/ThresholdUsd": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThresholdUsd"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/WarnRatio": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WarnRatio"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/ModelPricingJson": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelPricingJson"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/EnforcementStatus": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EnforcementStatus"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/BedrockModelUsageTrackerStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "BedrockModelUsageTrackerStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

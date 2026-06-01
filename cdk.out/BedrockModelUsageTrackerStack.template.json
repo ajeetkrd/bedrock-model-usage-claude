@@ -1,0 +1,759 @@
+{
+ "Resources": {
+  "UsageTable28300137": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "modelMonth",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "totalTokens",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "byModelMonth",
+      "KeySchema": [
+       {
+        "AttributeName": "modelMonth",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "totalTokens",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sk",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageTable/Resource"
+   }
+  },
+  "BatchStateTable6A5DF0DB": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sk",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TimeToLiveSpecification": {
+     "AttributeName": "expireAt",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/BatchStateTable/Resource"
+   }
+  },
+  "UsageAlertTopicDE457A2F": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "Bedrock Usage Threshold Alerts"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageAlertTopic/Resource"
+   }
+  },
+  "UsageAlertTopicajeetkrdamazoncom98F11CD3": {
+   "Type": "AWS::SNS::Subscription",
+   "Properties": {
+    "Endpoint": "ajeetkrd@amazon.com",
+    "Protocol": "email",
+    "TopicArn": {
+     "Ref": "UsageAlertTopicDE457A2F"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageAlertTopic/ajeetkrd@amazon.com/Resource"
+   }
+  },
+  "UsageBatchProcessorFnServiceRole0F1E820F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageBatchProcessorFn/ServiceRole/Resource"
+   }
+  },
+  "UsageBatchProcessorFnServiceRoleDefaultPolicy34C99CAE": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BatchStateTable6A5DF0DB",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "UsageTable28300137",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "UsageTable28300137",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        },
+        {
+         "Ref": "AWS::NoValue"
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:s3:::708895069383-berock-claude",
+        "arn:aws:s3:::708895069383-berock-claude/*"
+       ]
+      },
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "UsageAlertTopicDE457A2F"
+       }
+      },
+      {
+       "Action": [
+        "identitystore:DescribeUser",
+        "identitystore:GetGroupId",
+        "identitystore:GetGroupMembershipId",
+        "identitystore:GetUserId",
+        "identitystore:IsMemberInGroups"
+       ],
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "IdentityCenterReadResolve"
+      },
+      {
+       "Action": "identitystore:DeleteGroupMembership",
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "IdentityCenterRemoveMembership"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "UsageBatchProcessorFnServiceRoleDefaultPolicy34C99CAE",
+    "Roles": [
+     {
+      "Ref": "UsageBatchProcessorFnServiceRole0F1E820F"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageBatchProcessorFn/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "UsageBatchProcessorFnD841E187": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-708895069383-ap-south-1",
+     "S3Key": "ebe815e6a9e2bf3953d74d6ada3f04c2176a65a949844842aa5c2824abc6cb06.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "USAGE_TABLE": {
+       "Ref": "UsageTable28300137"
+      },
+      "STATE_TABLE": {
+       "Ref": "BatchStateTable6A5DF0DB"
+      },
+      "LOG_BUCKET": "708895069383-berock-claude",
+      "LOG_KEY_PREFIX": "",
+      "LOG_ACCOUNT_ID": "708895069383",
+      "LOG_REGIONS": "auto",
+      "ALERT_TOPIC_ARN": {
+       "Ref": "UsageAlertTopicDE457A2F"
+      },
+      "THRESHOLD_USD": "0.01",
+      "WARN_RATIO": "0.8",
+      "MODEL_PRICING_JSON": "{\"opus\": [5, 25], \"sonnet\": [3, 15], \"haiku\": [1, 5]}",
+      "METRICS_NAMESPACE": "BedrockUsage",
+      "LOOKBACK_MINUTES": "15",
+      "ENFORCE_ENABLED": "true",
+      "ENFORCE_DRY_RUN": "false",
+      "IDENTITY_STORE_ID": "d-9066174cc7",
+      "IDENTITY_STORE_REGION": "us-east-1",
+      "ENFORCE_GROUP_IDS": "",
+      "ENFORCE_GROUP_NAMES": "claude",
+      "ENFORCE_USER_ATTRIBUTE": "userName",
+      "ENFORCE_ALLOWLIST": "ajeetkrd"
+     }
+    },
+    "Handler": "usage_batch_processor.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "UsageBatchProcessorFnServiceRole0F1E820F",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "UsageBatchProcessorFnServiceRoleDefaultPolicy34C99CAE",
+    "UsageBatchProcessorFnServiceRole0F1E820F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageBatchProcessorFn/Resource",
+    "aws:asset:path": "asset.ebe815e6a9e2bf3953d74d6ada3f04c2176a65a949844842aa5c2824abc6cb06",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "UsageBatchProcessorFnLogRetentionE6FE383A": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "UsageBatchProcessorFnD841E187"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 30
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageBatchProcessorFn/LogRetention/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:DeleteRetentionPolicy",
+        "logs:PutRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "Roles": [
+     {
+      "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Handler": "index.handler",
+    "Runtime": "nodejs20.x",
+    "Timeout": 900,
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-708895069383-ap-south-1",
+     "S3Key": "4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+    "aws:asset:path": "asset.4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "UsageBatchScheduleEBFF20B9": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Roll up Bedrock S3 invocation logs every 2 min",
+    "ScheduleExpression": "rate(2 minutes)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "UsageBatchProcessorFnD841E187",
+        "Arn"
+       ]
+      },
+      "Id": "Target0"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageBatchSchedule/Resource"
+   }
+  },
+  "UsageBatchScheduleAllowEventRuleBedrockModelUsageTrackerStackUsageBatchProcessorFnC2060174F0D3F3CF": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "UsageBatchProcessorFnD841E187",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "UsageBatchScheduleEBFF20B9",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageBatchSchedule/AllowEventRuleBedrockModelUsageTrackerStackUsageBatchProcessorFnC2060174"
+   }
+  },
+  "UsageReaderFnServiceRoleD3185938": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageReaderFn/ServiceRole/Resource"
+   }
+  },
+  "UsageReaderFnServiceRoleDefaultPolicyF50137A8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:Query",
+        "dynamodb:Scan"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "UsageTable28300137",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "UsageTable28300137",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "UsageReaderFnServiceRoleDefaultPolicyF50137A8",
+    "Roles": [
+     {
+      "Ref": "UsageReaderFnServiceRoleD3185938"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageReaderFn/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "UsageReaderFn62B89485": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-708895069383-ap-south-1",
+     "S3Key": "4c6a9490b058ba0f833f9a90f874fe0b0ca1c003479ce25a701fae10f98361fc.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "USAGE_TABLE": {
+       "Ref": "UsageTable28300137"
+      },
+      "THRESHOLD_USD": "0.01",
+      "WARN_RATIO": "0.8",
+      "MODEL_PRICING_JSON": "{\"opus\": [5, 25], \"sonnet\": [3, 15], \"haiku\": [1, 5]}"
+     }
+    },
+    "Handler": "usage_reader.handler",
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "UsageReaderFnServiceRoleD3185938",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.12",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "UsageReaderFnServiceRoleDefaultPolicyF50137A8",
+    "UsageReaderFnServiceRoleD3185938"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageReaderFn/Resource",
+    "aws:asset:path": "asset.4c6a9490b058ba0f833f9a90f874fe0b0ca1c003479ce25a701fae10f98361fc",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "UsageReaderFnLogRetention84438CF7": {
+   "Type": "Custom::LogRetention",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+      "Arn"
+     ]
+    },
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "UsageReaderFn62B89485"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 30
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/UsageReaderFn/LogRetention/Resource"
+   }
+  },
+  "BedrockUsageDashboard18F4C624": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"start\":\"-P1D\",\"periodOverride\":\"auto\",\"widgets\":[{\"type\":\"text\",\"width\":24,\"height\":3,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"# Bedrock Usage Dashboard\\nPer-user monthly budget: **$0.01** across all models. Email alert fires at **80%** of budget.\\n\\nBatch rollup from S3 logs in `s3://708895069383-berock-claude` every **2 minutes**. Per-user spend is exact in DynamoDB (table below); metric graphs are per-model only.\"}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":3,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Total tokens (sum, 5m)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"stacked\":false,\"metrics\":[[\"BedrockUsage\",\"InputTokens\",{\"stat\":\"Sum\"}],[\"BedrockUsage\",\"OutputTokens\",{\"stat\":\"Sum\"}],[\"BedrockUsage\",\"TotalTokens\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":3,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Tokens per model\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Tokens per model\",\"expression\":\"SEARCH('{BedrockUsage,ModelId} MetricName=\\\"TotalTokens\\\"', 'Sum', 300)\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":9,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cost (USD, sum, 5m)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"BedrockUsage\",\"CostUSD\",{\"label\":\"Total cost (USD)\",\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":9,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Cost per model (USD)\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Cost per model (USD)\",\"expression\":\"SEARCH('{BedrockUsage,ModelId} MetricName=\\\"CostUSD\\\"', 'Sum', 300)\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":15,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Invocations per model\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[{\"label\":\"Invocations per model\",\"expression\":\"SEARCH('{BedrockUsage,ModelId} MetricName=\\\"Invocations\\\"', 'Sum', 300)\"}]],\"yAxis\":{}}},{\"type\":\"custom\",\"width\":24,\"height\":10,\"x\":0,\"y\":21,\"properties\":{\"endpoint\":\"",
+       {
+        "Fn::GetAtt": [
+         "UsageReaderFn62B89485",
+         "Arn"
+        ]
+       },
+       "\",\"title\":\"Top users per model — current month (DynamoDB)\",\"updateOn\":{\"refresh\":true,\"resize\":true,\"timeRange\":false}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "BedrockUsageDashboard"
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/BedrockUsageDashboard/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02QwU7DMAyGn2X3zFAGElfGxAmJquM+uYlpQ9O4qhOmquq7k2YM7eTPv+3fTh6geHqG+w2eZatNt3W2hvkYUHcqSafZTB57Nkn8xNqRev3yGRYlXpLIg9VZzHCMtejRDsGyX9XbPE3sYB91R2GPQsphXxuE+S16fe2/5ZLG3orkSYs9zBVf9udYsrN6yn2ZVvcTilAQeFmDctwIvHNTUSCfTeknQTq6in9GcX2HdhzNGYNuYT6gtDXjaNbyf7IsqiLhOGpS2Tv9T2N9kz2uhcQfMQwxLKqcQsv+bgdFAY+bb7F2O8Z0Qk9QXeIvDRZQC3YBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "BedrockModelUsageTrackerStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "DashboardName": {
+   "Value": {
+    "Ref": "BedrockUsageDashboard18F4C624"
+   }
+  },
+  "UsageTableName": {
+   "Value": {
+    "Ref": "UsageTable28300137"
+   }
+  },
+  "StateTableName": {
+   "Value": {
+    "Ref": "BatchStateTable6A5DF0DB"
+   }
+  },
+  "AlertTopicArn": {
+   "Value": {
+    "Ref": "UsageAlertTopicDE457A2F"
+   }
+  },
+  "BatchProcessorLambdaName": {
+   "Value": {
+    "Ref": "UsageBatchProcessorFnD841E187"
+   }
+  },
+  "LogBucketName": {
+   "Value": "708895069383-berock-claude"
+  },
+  "ThresholdUsd": {
+   "Value": "0.01"
+  },
+  "WarnRatio": {
+   "Value": "0.8"
+  },
+  "ModelPricingJson": {
+   "Value": "{\"opus\": [5, 25], \"sonnet\": [3, 15], \"haiku\": [1, 5]}"
+  },
+  "EnforcementStatus": {
+   "Value": "ENABLED, dry_run=false, groups=claude"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
