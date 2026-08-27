@@ -1,0 +1,138 @@
+{
+  "$schemaVersion": 2,
+  "inference": {
+    "provider": "bedrock",
+    "region": "ap-south-1",
+    "credential": {
+      "kind": "interactive",
+      "ssoStartUrl": "https://ajeetdubey.awsapps.com/start",
+      "ssoRegion": "us-east-1",
+      "ssoAccountId": "708895069383",
+      "ssoRoleName": "AdministratorAccess"
+    }
+  },
+  "chatSurface": {
+    "enabled": true,
+    "advancedFileAnalysis": true
+  },
+  "extensions": {
+    "enabled": true
+  },
+  "models": {
+    "list": [
+      {
+        "name": "global.anthropic.claude-opus-4-8",
+        "labelOverride": "opus4-8",
+        "supports1m": true,
+        "prefer1m": true,
+        "anthropicFamilyTier": "opus",
+        "isFamilyDefault": true
+      },
+      {
+        "name": "apac.anthropic.claude-sonnet-4-20250514-v1:0",
+        "labelOverride": "apac sonnet",
+        "anthropicFamilyTier": "sonnet"
+      },
+      {
+        "name": "anthropic.claude-sonnet-4-20250514-v1:0",
+        "labelOverride": "sonnet",
+        "anthropicFamilyTier": "sonnet"
+      },
+      {
+        "name": "jp.anthropic.claude-sonnet-4-6",
+        "labelOverride": "jp sonnet",
+        "anthropicFamilyTier": "sonnet"
+      },
+      {
+        "name": "apac.anthropic.claude-sonnet-4-20250514-v1:0",
+        "labelOverride": "apac sonnet 4-5",
+        "anthropicFamilyTier": "sonnet"
+      },
+      {
+        "name": "global.anthropic.claude-haiku-4-5-20251001-v1:0",
+        "labelOverride": "haiku",
+        "anthropicFamilyTier": "haiku"
+      },
+      {
+        "name": "global.anthropic.claude-opus-5",
+        "labelOverride": "opus 5",
+        "supports1m": true,
+        "prefer1m": true,
+        "anthropicFamilyTier": "opus",
+        "isFamilyDefault": true
+      },
+      {
+        "name": "global.anthropic.claude-sonnet-5",
+        "labelOverride": "Sonnet5",
+        "supports1m": true,
+        "prefer1m": true,
+        "anthropicFamilyTier": "sonnet",
+        "isFamilyDefault": true
+      }
+    ],
+    "pricing": {
+      "enabled": true,
+      "multiplier": 1,
+      "models": [
+        {
+          "name": "global.anthropic.claude-opus-4-8",
+          "inputPerMtok": 5,
+          "outputPerMtok": 25,
+          "cacheReadPerMtok": 6.25,
+          "cacheWritePerMtok": 0.5
+        }
+      ]
+    }
+  },
+  "workspace": {
+    "builtinToolPolicy": {
+      "Bash": "allow",
+      "Read": "allow",
+      "WebSearch": "allow",
+      "AskUserQuestion": "allow",
+      "Skill": "allow",
+      "Write": "allow",
+      "Edit": "allow",
+      "Glob": "allow",
+      "Grep": "allow",
+      "NotebookEdit": "allow",
+      "WebFetch": "allow",
+      "Task": "allow",
+      "TodoWrite": "allow",
+      "TaskCreate": "allow",
+      "TaskUpdate": "allow",
+      "TaskGet": "allow",
+      "TaskList": "allow",
+      "TaskStop": "allow",
+      "REPL": "allow",
+      "JavaScript": "allow",
+      "ToolSearch": "allow",
+      "SendUserMessage": "allow"
+    },
+    "toolSearchEnabled": true,
+    "skipWebFetchPreflight": true,
+    "allowedEgressHosts": [
+      "*"
+    ]
+  },
+  "authentication": {
+    "disableClaudeAiSignIn": true,
+    "disableDeepLinks": true
+  },
+  "appearance": {
+    "deploymentDisplayName": "via Bedrock",
+    "deploymentDisplaySubtitle": "running"
+  },
+  "claudeAiImport": {
+    "enabled": true,
+    "exportEnabled": true,
+    "bannerBehavior": "detect"
+  },
+  "banner": {
+    "enabled": true,
+    "text": "Ajeet",
+    "backgroundColor": "#D7EEF4",
+    "textColor": "#000000",
+    "linkUrl": "https://www.linkedin.com/in/ajeet-k-dubey/"
+  }
+}
