@@ -9,6 +9,8 @@
   "inferenceBedrockSsoRegion": "us-east-1",
   "inferenceBedrockSsoAccountId": "708895069383",
   "inferenceBedrockSsoRoleName": "ClaudeBedrock",
+  "inferenceTokenWindowHours": 24,
+  "inferenceMaxTokensPerWindow": 50000000,
 
   "chatTabEnabled": true,
   "chatAdvancedFileAnalysisEnabled": true,
