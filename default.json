@@ -36,7 +36,7 @@
       "labelOverride": "infr profile haiku",
       "anthropicFamilyTier": "haiku"
     },
-    "name": "arn:aws:bedrock:ap-south-1:708895069383:application-inference-profile/tykmvizodk9v",
+    {"name": "arn:aws:bedrock:ap-south-1:708895069383:application-inference-profile/tykmvizodk9v",
     "labelOverride": "infr profile fable",
     "anthropicFamilyTier": "fable"
     }    
