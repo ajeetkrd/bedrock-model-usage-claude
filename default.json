@@ -19,21 +19,25 @@
   "modelPrefer1mContext": true,
   "inferenceModels": [
     {
-      "name": "arn:aws:bedrock:ap-south-1:708895069383:application-inference-profile/rq8oqww71fqm",
-      "labelOverride": "Infr Profile Opus",
+      "name": "in.anthropic.claude-opus-5",
+      "labelOverride": "in-opus",
       "supports1m": true,
       "prefer1m": true,
       "anthropicFamilyTier": "opus",
       "isFamilyDefault": true
     },
     {
-      "name": "arn:aws:bedrock:ap-south-1:708895069383:application-inference-profile/3pnu5nz7ge2o",
-      "labelOverride": "infr profile sonnet",
+      "name": "in.anthropic.claude-sonnet-5",
+      "labelOverride": "in-sonnet",
+      "supports1m": true,
+      "prefer1m": true,      
       "anthropicFamilyTier": "sonnet"
     },
     {
-      "name": "arn:aws:bedrock:ap-south-1:708895069383:application-inference-profile/gfx94loxwuuj",
-      "labelOverride": "infr profile haiku",
+      "name": "in.anthropic.claude-haiku-4-5",
+      "labelOverride": "in-haiku",
+      "supports1m": true,
+      "prefer1m": true,       
       "anthropicFamilyTier": "haiku"
     },
     {"name": "arn:aws:bedrock:ap-south-1:708895069383:application-inference-profile/tykmvizodk9v",
