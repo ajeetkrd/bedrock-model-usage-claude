@@ -15,6 +15,13 @@
   "chatTabEnabled": true,
   "chatAdvancedFileAnalysisEnabled": true,
   "isDesktopExtensionEnabled": true,
+    "managedMcpServers": [
+    {
+      "name": "amazon-web-search",
+      "transport": "http",
+      "url": "https://claude-websearch-anonymous-8l36dwryfj.gateway.bedrock-agentcore.us-east-1.amazonaws.com/mcp"
+    }
+  ],
 
   "modelPrefer1mContext": true,
   "inferenceModels": [
